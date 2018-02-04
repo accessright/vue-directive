@@ -1,5 +1,6 @@
-let getAccessRightDefinition (resourcePath) => {
-  let accessRightDefinition = Object.get(resourcePath, accessRightState)
+let accessControlList = this.$store.state.permission.accessControlList
+let getAccessRightDefinition (resourcePath, accessControlList) => {
+  let accessRightDefinition = Object.get(resourcePath, accessControlList)
 }
 let applyAccessRight = ({accessRights, customCallback}) => {
   return (el) => {
@@ -18,23 +19,36 @@ let applyAccessRight = ({accessRights, customCallback}) => {
     }
   }
 }
-let accessController = ({el, attribute, value, modifiers}) => {
-  let accessRights 
-  if (attribute === 'accessControl') {
-    accessRights = getAccessRightDefinition(value.resourcePath)
-    applyAccessRight({accessRights, value.customCallback})(el)
+let accessController = {
+  accessControlList,
+  init ({el, attribute, value, modifiers}) => {
+    let accessRights 
+    if (attribute === 'accessControl') {
+      accessRights = this.fetchAccessControlList(value.resourcePath)
+      this.applyAccessRight({accessRights, value.customCallback})(el)
+    }
   } 
+  applyAccessRight,
+  getAccessRightDefinition,
+  fetchAccessControlList: async (resourcePath) => {
+    let accessControlList = await permissionStore.dispatch('permission/GET', {
+      data: {
+        resourcePath
+      }
+    })
+    let accessRights = this.getAccessRightDefinition(resourcePath,accessControlList)
+    return accessRights
+  }
 }
 /*@description 
  * **/
 export default {
   bind: function (el, binding, vnode) {
-    accessController({
+    accessController.init({
       attribute: binding.argument,
       value: binding.value,
       modifiers: binding.modifiers,
       el
-    }); 
-  })
-}
+    }) 
+  }
 }
