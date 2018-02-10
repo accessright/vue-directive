@@ -1,5 +1,5 @@
 1. use one directive to make access rights control
-2. common way to control access rights: 
+2. common way to define control access rights: 
 {
   app: {
     service1: {
@@ -10,4 +10,5 @@
     }
   }
 }
-3. 
+3. no interaction for existing codes
+

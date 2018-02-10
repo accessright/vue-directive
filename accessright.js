@@ -44,6 +44,7 @@ let accessController = {
  * **/
 export default {
   bind: function (el, binding, vnode) {
+    // 初始化
     accessController.init({
       attribute: binding.argument,
       value: binding.value,
